@@ -5,14 +5,48 @@ document.addEventListener('DOMContentLoaded', () => {
         createConfetti();
     });
 
+    // Create falling snowflakes continuously
+    createSnowflakes();
+    // Add twinkle lights
+    addTwinkleLights();
     // Auto create some confetti on load
-    setInterval(createConfetti, 2000);
+    setInterval(createConfetti, 3000);
 });
+function addTwinkleLights() {
+    const twinkle = document.querySelector('.twinkle-lights');
+    if (!twinkle) return;
+    for (let i = 0; i < 10; i++) {
+        const bulb = document.createElement('span');
+        twinkle.appendChild(bulb);
+    }
+}
+
+function createSnowflakes() {
+    const snowflakesContainer = document.querySelector('.snowflakes');
+    const snowflakeSymbols = ['❄️', '❅', '❆', '✿', '⛄'];
+    
+    for (let i = 0; i < 30; i++) {
+        const snowflake = document.createElement('div');
+        snowflake.classList.add('snowflake');
+        
+        const left = Math.random() * window.innerWidth;
+        const duration = Math.random() * 5 + 8;
+        const symbol = snowflakeSymbols[Math.floor(Math.random() * snowflakeSymbols.length)];
+        const delay = Math.random() * 5;
+        
+        snowflake.textContent = symbol;
+        snowflake.style.left = `${left}px`;
+        snowflake.style.animationDuration = `${duration}s`;
+        snowflake.style.animationDelay = `${delay}s`;
+        
+        snowflakesContainer.appendChild(snowflake);
+    }
+}
 
 function createConfetti() {
-    const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeead'];
+    const colors = ['red', 'gold', 'green', 'silver'];
     
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 15; i++) {
         const confetti = document.createElement('div');
         confetti.classList.add('confetti');
         
@@ -20,9 +54,9 @@ function createConfetti() {
         const animDuration = Math.random() * 3 + 2;
         const color = colors[Math.floor(Math.random() * colors.length)];
         
+        confetti.classList.add(color);
         confetti.style.left = `${left}px`;
         confetti.style.top = '-10px';
-        confetti.style.backgroundColor = color;
         confetti.style.animationDuration = `${animDuration}s`;
         
         document.body.appendChild(confetti);
