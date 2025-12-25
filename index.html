@@ -5,16 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🎄 Merry Christmas Aesha! 🎄</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@400;700&family=Quicksand:wght@300;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="snowflakes"></div>
-    <div class="tree-bg"></div>
+    <div class="snowflakes" aria-hidden="true"></div>
+    <div class="lights-string"></div>
+    
     <div class="container">
-        <div class="twinkle-lights"></div>
-        <h1><span class="santa-hat">🎅</span> Merry Christmas! 🎄</h1>
-        <p class="subtitle">A Special Holiday Greeting for Aesha <span class="snowflake-icon">❄️</span></p>
-        <p style="font-size: 1rem; margin-top: 20px; color: #888;">(Click to see Christmas magic!)</p>
+        <div class="music-control" id="musicBtn">
+            <span class="icon">🔔</span> Play Jingle
+        </div>
+        
+        <div class="content-box">
+            <div class="santa-animation">🎅</div>
+            <h1 class="title">Merry Christmas <br><span class="highlight">Aesha!</span></h1>
+            
+            <div class="tree-container">
+                <div class="christmas-tree">🎄</div>
+            </div>
+
+            <div class="animated-text">
+                <span id="typing-text"></span><span class="cursor">|</span>
+            </div>
+            
+            <button id="magicBtn" class="magic-button">Open Gift! 🎁</button>
+        </div>
     </div>
+
     <script src="script.js"></script>
 </body>
 </html>

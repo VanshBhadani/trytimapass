@@ -1,79 +1,180 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const container = document.querySelector('.container');
-    
-    container.addEventListener('click', () => {
-        createConfetti();
+    // Typing Effect
+    const textElement = document.getElementById('typing-text');
+    const phrases = ["Wishing you joy!", "Merry Christmas!", "Happy Holidays!", "Stay warm & cozy!"];
+    let phraseIndex = 0;
+    let charIndex = 0;
+    let isDeleting = false;
+
+    function type() {
+        const currentPhrase = phrases[phraseIndex];
+        
+        if (isDeleting) {
+            textElement.textContent = currentPhrase.substring(0, charIndex - 1);
+            charIndex--;
+        } else {
+            textElement.textContent = currentPhrase.substring(0, charIndex + 1);
+            charIndex++;
+        }
+
+        if (!isDeleting && charIndex === currentPhrase.length) {
+            setTimeout(() => isDeleting = true, 2000);
+        } else if (isDeleting && charIndex === 0) {
+            isDeleting = false;
+            phraseIndex = (phraseIndex + 1) % phrases.length;
+        }
+
+        const speed = isDeleting ? 50 : 100;
+        setTimeout(type, speed);
+    }
+    type();
+
+    // Magic Button Effect (Gift Opening)
+    const btn = document.getElementById('magicBtn');
+    btn.addEventListener('click', (e) => {
+        createExplosion(e.clientX, e.clientY);
+        playJingleSound();
     });
 
-    // Create falling snowflakes continuously
+    // Create Snowflakes
     createSnowflakes();
-    // Add twinkle lights
-    addTwinkleLights();
-    // Auto create some confetti on load
-    setInterval(createConfetti, 3000);
-});
-function addTwinkleLights() {
-    const twinkle = document.querySelector('.twinkle-lights');
-    if (!twinkle) return;
-    for (let i = 0; i < 10; i++) {
-        const bulb = document.createElement('span');
-        twinkle.appendChild(bulb);
+
+    // Create Lights
+    createLights();
+
+    // Music Player (Jingle Bells Melody)
+    const musicBtn = document.getElementById('musicBtn');
+    let isPlaying = false;
+    let audioContext = null;
+    let melodyInterval = null;
+
+    musicBtn.addEventListener('click', () => {
+        if (!isPlaying) {
+            startMusic();
+            musicBtn.innerHTML = '<span class="icon">🔇</span> Stop Jingle';
+            isPlaying = true;
+        } else {
+            stopMusic();
+            musicBtn.innerHTML = '<span class="icon">🔔</span> Play Jingle';
+            isPlaying = false;
+        }
+    });
+
+    function startMusic() {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        // Simple Jingle Bells notes (approximate)
+        const melody = [
+            {note: 329.63, dur: 0.2}, {note: 329.63, dur: 0.2}, {note: 329.63, dur: 0.4}, // Jingle bells
+            {note: 329.63, dur: 0.2}, {note: 329.63, dur: 0.2}, {note: 329.63, dur: 0.4}, // Jingle bells
+            {note: 329.63, dur: 0.2}, {note: 392.00, dur: 0.2}, {note: 261.63, dur: 0.2}, {note: 293.66, dur: 0.1}, {note: 329.63, dur: 0.8} // Jingle all the way
+        ];
+        
+        let noteIndex = 0;
+
+        melodyInterval = setInterval(() => {
+            if (noteIndex >= melody.length) noteIndex = 0;
+            const n = melody[noteIndex];
+            playNote(n.note, n.dur);
+            noteIndex++;
+        }, 300);
     }
-}
+
+    function stopMusic() {
+        if (melodyInterval) clearInterval(melodyInterval);
+        if (audioContext) audioContext.close();
+    }
+
+    function playNote(freq, duration) {
+        if (!audioContext) return;
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        
+        osc.type = 'sine'; // Softer sound for Christmas
+        osc.frequency.value = freq;
+        
+        gain.gain.setValueAtTime(0.1, audioContext.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + duration);
+        
+        osc.connect(gain);
+        gain.connect(audioContext.destination);
+        
+        osc.start();
+        osc.stop(audioContext.currentTime + duration);
+    }
+
+    function playJingleSound() {
+        if (!window.AudioContext) return;
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        // Simulate sleigh bells
+        for(let i=0; i<5; i++) {
+            setTimeout(() => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.value = 2000 + Math.random() * 1000;
+                gain.gain.setValueAtTime(0.05, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.1);
+            }, i * 50);
+        }
+    }
+});
 
 function createSnowflakes() {
-    const snowflakesContainer = document.querySelector('.snowflakes');
-    const snowflakeSymbols = ['❄️', '❅', '❆', '✿', '⛄'];
-    
+    const container = document.querySelector('.snowflakes');
+    const count = 50;
+    for (let i = 0; i < count; i++) {
+        const flake = document.createElement('div');
+        flake.classList.add('snowflake');
+        flake.innerHTML = '❄';
+        flake.style.left = Math.random() * 100 + 'vw';
+        flake.style.animationDuration = Math.random() * 3 + 2 + 's';
+        flake.style.opacity = Math.random();
+        flake.style.fontSize = Math.random() * 10 + 10 + 'px';
+        container.appendChild(flake);
+    }
+}
+
+function createLights() {
+    const container = document.querySelector('.lights-string');
+    const count = 30;
+    for (let i = 0; i < count; i++) {
+        const light = document.createElement('div');
+        light.classList.add('light');
+        container.appendChild(light);
+    }
+}
+
+function createExplosion(x, y) {
+    const colors = ['#c0392b', '#27ae60', '#f1c40f', '#ecf0f1'];
     for (let i = 0; i < 30; i++) {
-        const snowflake = document.createElement('div');
-        snowflake.classList.add('snowflake');
+        const particle = document.createElement('div');
+        particle.style.position = 'fixed';
+        particle.style.left = x + 'px';
+        particle.style.top = y + 'px';
+        particle.style.width = '8px';
+        particle.style.height = '8px';
+        particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        particle.style.borderRadius = '50%';
+        particle.style.pointerEvents = 'none';
         
-        const left = Math.random() * window.innerWidth;
-        const duration = Math.random() * 5 + 8;
-        const symbol = snowflakeSymbols[Math.floor(Math.random() * snowflakeSymbols.length)];
-        const delay = Math.random() * 5;
+        const angle = Math.random() * Math.PI * 2;
+        const velocity = Math.random() * 100 + 50;
+        const tx = Math.cos(angle) * velocity;
+        const ty = Math.sin(angle) * velocity;
         
-        snowflake.textContent = symbol;
-        snowflake.style.left = `${left}px`;
-        snowflake.style.animationDuration = `${duration}s`;
-        snowflake.style.animationDelay = `${delay}s`;
+        particle.animate([
+            { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+            { transform: `translate(${tx}px, ${ty}px) scale(0)`, opacity: 0 }
+        ], {
+            duration: 1000,
+            easing: 'cubic-bezier(0, .9, .57, 1)'
+        });
         
-        snowflakesContainer.appendChild(snowflake);
+        document.body.appendChild(particle);
+        setTimeout(() => particle.remove(), 1000);
     }
 }
-
-function createConfetti() {
-    const colors = ['red', 'gold', 'green', 'silver'];
-    
-    for (let i = 0; i < 15; i++) {
-        const confetti = document.createElement('div');
-        confetti.classList.add('confetti');
-        
-        const left = Math.random() * window.innerWidth;
-        const animDuration = Math.random() * 3 + 2;
-        const color = colors[Math.floor(Math.random() * colors.length)];
-        
-        confetti.classList.add(color);
-        confetti.style.left = `${left}px`;
-        confetti.style.top = '-10px';
-        confetti.style.animationDuration = `${animDuration}s`;
-        
-        document.body.appendChild(confetti);
-        
-        // Remove element after animation
-        setTimeout(() => {
-            confetti.remove();
-        }, animDuration * 1000);
-    }
-}
-
-// Add keyframes for falling animation dynamically
-const styleSheet = document.createElement("style");
-styleSheet.innerText = `
-@keyframes fall {
-    to {
-        transform: translateY(100vh) rotate(720deg);
-    }
-}`;
-document.head.appendChild(styleSheet);
